@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
+import MailLockTwoToneIcon from "@mui/icons-material/MailLockTwoTone";
+import VpnKeyTwoToneIcon from "@mui/icons-material/VpnKeyTwoTone";
 import {
   Avatar,
   Box,
@@ -8,12 +10,14 @@ import {
   createTheme,
   CssBaseline,
   Grid,
+  InputAdornment,
   Link,
   TextField,
   ThemeProvider,
   Typography,
 } from "@mui/material";
 import React, { memo, useReducer } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   RESET_STATE,
   SET_EMAIL,
@@ -53,6 +57,7 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
   };
 
   const theme = createTheme();
+  const navigate = useNavigate();
 
   return (
     <ThemeProvider theme={theme}>
@@ -101,6 +106,13 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
                   onChange={(e) => {
                     dispatch({ type: SET_EMAIL, payload: e.target.value });
                   }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <MailLockTwoToneIcon />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
                 {state.emailError && (
                   <Typography
@@ -127,6 +139,13 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
                   onChange={(e) =>
                     dispatch({ type: SET_PASSWORD, payload: e.target.value })
                   }
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <VpnKeyTwoToneIcon />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Grid>
             </Grid>
@@ -141,12 +160,32 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="/forgotPassword" variant="body2">
+                <Link
+                  variant="body2"
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    navigate("/forgotPassword", {
+                      replace: true,
+                    })
+                  }
+                >
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="/register" variant="body2">
+                <Link
+                  variant="body2"
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    navigate("/register", {
+                      replace: true,
+                    })
+                  }
+                >
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>

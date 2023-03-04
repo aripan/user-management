@@ -1,5 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
+import BadgeTwoToneIcon from "@mui/icons-material/BadgeTwoTone";
+import MailLockTwoToneIcon from "@mui/icons-material/MailLockTwoTone";
+import VpnKeyTwoToneIcon from "@mui/icons-material/VpnKeyTwoTone";
 import {
   Avatar,
   Box,
@@ -10,6 +13,7 @@ import {
   FormControl,
   FormHelperText,
   Grid,
+  InputAdornment,
   InputLabel,
   Link,
   MenuItem,
@@ -19,6 +23,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { memo, useReducer } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   RESET_STATE,
   SET_ANSWER,
@@ -95,6 +100,7 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
   };
 
   const theme = createTheme();
+  const navigate = useNavigate();
 
   return (
     <ThemeProvider theme={theme}>
@@ -144,6 +150,13 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
                   onChange={(e) =>
                     dispatch({ type: SET_FIRST_NAME, payload: e.target.value })
                   }
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <BadgeTwoToneIcon />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Grid>
 
@@ -159,6 +172,13 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
                   onChange={(e) =>
                     dispatch({ type: SET_LAST_NAME, payload: e.target.value })
                   }
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <BadgeTwoToneIcon />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -172,6 +192,13 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
                   value={state.email}
                   onChange={(e) => {
                     dispatch({ type: SET_EMAIL, payload: e.target.value });
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <MailLockTwoToneIcon />
+                      </InputAdornment>
+                    ),
                   }}
                 />
                 {state.emailError && (
@@ -199,6 +226,13 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
                   onChange={(e) =>
                     dispatch({ type: SET_PASSWORD, payload: e.target.value })
                   }
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <VpnKeyTwoToneIcon />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
                 {state.passwordError && (
                   <Typography
@@ -229,6 +263,13 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
                       payload: e.target.value,
                     })
                   }
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <VpnKeyTwoToneIcon />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
                 {state.confirmPasswordError && (
                   <Typography
@@ -303,8 +344,18 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="/login" variant="body2">
-                  Already have an account? Sign in
+                <Link
+                  variant="body2"
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    navigate("/login", {
+                      replace: true,
+                    })
+                  }
+                >
+                  {"Already have an account? Sign In"}
                 </Link>
               </Grid>
             </Grid>

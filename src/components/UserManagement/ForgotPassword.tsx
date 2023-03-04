@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import CableOutlinedIcon from "@mui/icons-material/CableOutlined";
+import MailLockTwoToneIcon from "@mui/icons-material/MailLockTwoTone";
 import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
+import VpnKeyTwoToneIcon from "@mui/icons-material/VpnKeyTwoTone";
 import {
   Avatar,
   Box,
@@ -10,6 +12,7 @@ import {
   CssBaseline,
   FormControl,
   Grid,
+  InputAdornment,
   InputLabel,
   Link,
   MenuItem,
@@ -19,6 +22,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useReducer } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ENABLE_SET_PASSWORD,
   RESET_STATE,
@@ -113,6 +117,8 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = () => {
   };
 
   const theme = createTheme();
+  const navigate = useNavigate();
+
   return (
     <ThemeProvider theme={theme}>
       <Container
@@ -169,6 +175,13 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = () => {
                     onChange={(e) => {
                       dispatch({ type: SET_EMAIL, payload: e.target.value });
                     }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <MailLockTwoToneIcon />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                   {state.emailError && (
                     <Typography
@@ -195,6 +208,13 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = () => {
                     onChange={(e) =>
                       dispatch({ type: SET_PASSWORD, payload: e.target.value })
                     }
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <VpnKeyTwoToneIcon />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                   {state.passwordError && (
                     <Typography
@@ -225,6 +245,13 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = () => {
                         payload: e.target.value,
                       })
                     }
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <VpnKeyTwoToneIcon />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                   {state.confirmPasswordError && (
                     <Typography
@@ -251,6 +278,13 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = () => {
                     value={state.email}
                     onChange={(e) => {
                       dispatch({ type: SET_EMAIL, payload: e.target.value });
+                    }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <MailLockTwoToneIcon />
+                        </InputAdornment>
+                      ),
                     }}
                   />
                   {state.emailError && (
@@ -327,8 +361,18 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = () => {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="/login" variant="body2">
-                  Already have an account? Sign in
+                <Link
+                  variant="body2"
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    navigate("/login", {
+                      replace: true,
+                    })
+                  }
+                >
+                  {"Already have an account? Sign In"}
                 </Link>
               </Grid>
             </Grid>
