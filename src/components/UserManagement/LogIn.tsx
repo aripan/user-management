@@ -14,15 +14,15 @@ import {
 } from "@mui/material";
 import React, { memo, useCallback, useReducer } from "react";
 import {
-  loginReducer,
-  loginReducerInitialState,
-} from "../../reducers/loginReducer/loginReducer";
-import {
   RESET_STATE,
   SET_EMAIL,
   SET_EMAIL_ERROR,
   SET_PASSWORD,
-} from "../../reducers/registerReducer/action.types";
+} from "../../reducers/loginReducer/action.types";
+import {
+  loginReducer,
+  loginReducerInitialState,
+} from "../../reducers/loginReducer/loginReducer";
 
 export interface ILoginProps {}
 
