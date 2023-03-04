@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
 import {
   Avatar,
@@ -17,7 +18,7 @@ import {
   ThemeProvider,
   Typography,
 } from "@mui/material";
-import React, { memo, useCallback, useReducer } from "react";
+import React, { memo, useReducer } from "react";
 import {
   RESET_STATE,
   SET_ANSWER,
@@ -35,6 +36,10 @@ import {
   registerReducer,
   registerReducerInitialState,
 } from "../../reducers/registerReducer/registerReducer";
+import {
+  useCheckPasswordStrength,
+  useValidateEmail,
+} from "../../shared-hooks/hooks";
 import { securityQuestions } from "../../utilities/SecurityQuestions/SecurityQuestions";
 
 export interface IRegisterProps {}
@@ -47,8 +52,8 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const isEmailValid = validateEmail(state.email);
-    const isStrongPassword = checkPasswordStrength(state.password);
+    const isEmailValid = useValidateEmail(state.email);
+    const isStrongPassword = useCheckPasswordStrength(state.password);
 
     if (!isEmailValid) {
       dispatch({ type: SET_EMAIL_ERROR, payload: true });
@@ -88,19 +93,6 @@ const Register: React.FunctionComponent<IRegisterProps> = () => {
       alert("Something went wrong!");
     }
   };
-
-  const validateEmail = useCallback((email: string): boolean => {
-    // regular expression for email validation
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailRegex.test(email);
-  }, []);
-
-  const checkPasswordStrength = useCallback((password: string): boolean => {
-    // regular expression for checking strong password validation
-    const strongPasswordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#+?&])[A-Za-z\d@$!%*#+?&]{8,}$/;
-    return strongPasswordRegex.test(password);
-  }, []);
 
   const theme = createTheme();
 

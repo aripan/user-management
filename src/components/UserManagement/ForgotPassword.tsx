@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import CableOutlinedIcon from "@mui/icons-material/CableOutlined";
 import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
 import {
@@ -17,7 +18,7 @@ import {
   ThemeProvider,
   Typography,
 } from "@mui/material";
-import React, { useCallback, useReducer } from "react";
+import React, { useReducer } from "react";
 import {
   ENABLE_SET_PASSWORD,
   RESET_STATE,
@@ -34,6 +35,10 @@ import {
   forgotPasswordReducer,
   forgotPasswordReducerInitialState,
 } from "../../reducers/forgotPasswordReducer/forgotPasswordReducer";
+import {
+  useCheckPasswordStrength,
+  useValidateEmail,
+} from "../../shared-hooks/hooks";
 import { securityQuestions } from "../../utilities/SecurityQuestions/SecurityQuestions";
 // Define the Props interface
 export interface IForgotPasswordProps {}
@@ -47,7 +52,7 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = () => {
 
   const handleOldSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const isEmailValid = validateEmail(state.email);
+    const isEmailValid = useValidateEmail(state.email);
 
     if (!isEmailValid) {
       dispatch({ type: SET_EMAIL_ERROR, payload: true });
@@ -67,8 +72,8 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = () => {
   };
   const handleNewSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const isEmailValid = validateEmail(state.email);
-    const isStrongPassword = checkPasswordStrength(state.password);
+    const isEmailValid = useValidateEmail(state.email);
+    const isStrongPassword = useCheckPasswordStrength(state.password);
 
     if (!isEmailValid) {
       dispatch({ type: SET_EMAIL_ERROR, payload: true });
@@ -106,19 +111,6 @@ const ForgotPassword: React.FunctionComponent<IForgotPasswordProps> = () => {
       alert("Something went wrong!");
     }
   };
-
-  const validateEmail = useCallback((email: string): boolean => {
-    // regular expression for email validation
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailRegex.test(email);
-  }, []);
-
-  const checkPasswordStrength = useCallback((password: string): boolean => {
-    // regular expression for checking strong password validation
-    const strongPasswordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#+?&])[A-Za-z\d@$!%*#+?&]{8,}$/;
-    return strongPasswordRegex.test(password);
-  }, []);
 
   const theme = createTheme();
   return (

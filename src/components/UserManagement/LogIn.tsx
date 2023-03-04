@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
 import {
   Avatar,
@@ -12,7 +13,7 @@ import {
   ThemeProvider,
   Typography,
 } from "@mui/material";
-import React, { memo, useCallback, useReducer } from "react";
+import React, { memo, useReducer } from "react";
 import {
   RESET_STATE,
   SET_EMAIL,
@@ -23,6 +24,7 @@ import {
   loginReducer,
   loginReducerInitialState,
 } from "../../reducers/loginReducer/loginReducer";
+import { useValidateEmail } from "../../shared-hooks/hooks";
 
 export interface ILoginProps {}
 
@@ -31,7 +33,7 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const isEmailValid = validateEmail(state.email);
+    const isEmailValid = useValidateEmail(state.email);
 
     if (!isEmailValid) {
       dispatch({ type: SET_EMAIL_ERROR, payload: true });
@@ -49,12 +51,6 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
       alert("Something went wrong!");
     }
   };
-
-  const validateEmail = useCallback((email: string): boolean => {
-    // regular expression for email validation
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailRegex.test(email);
-  }, []);
 
   const theme = createTheme();
 
