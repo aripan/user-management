@@ -17,47 +17,33 @@ import {
   ThemeProvider,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { memo, useCallback, useReducer } from "react";
 import {
-  ISecurityQuestionProps,
-  securityQuestions,
-} from "../../utilities/SecurityQuestions/SecurityQuestions";
+  RESET_STATE,
+  SET_ANSWER,
+  SET_CONFIRM_PASSWORD,
+  SET_CONFIRM_PASSWORD_ERROR,
+  SET_EMAIL,
+  SET_EMAIL_ERROR,
+  SET_FIRST_NAME,
+  SET_LAST_NAME,
+  SET_PASSWORD,
+  SET_PASSWORD_ERROR,
+  SET_SELECTED_QUESTION,
+} from "../../reducers/registerReducer/action.types";
+import {
+  registerReducer,
+  registerReducerInitialState,
+} from "../../reducers/registerReducer/registerReducer";
+import { securityQuestions } from "../../utilities/SecurityQuestions/SecurityQuestions";
 
-// Define the Props interface
 export interface IRegisterProps {}
 
-// Define the State interface
-interface IRegisterState {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  selectedQuestion: ISecurityQuestionProps | undefined;
-  answer: string;
-  emailError: boolean;
-  passwordError: boolean;
-  confirmPasswordError: boolean;
-}
-
-const Register: React.FunctionComponent<IRegisterProps> = (props) => {
-  const initialRegisterState: IRegisterState = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    selectedQuestion: undefined,
-    answer: "",
-    emailError: false,
-    passwordError: false,
-    confirmPasswordError: false,
-  };
-
-  // all states
-  const [state, setState] = useState<IRegisterState>(initialRegisterState);
-
-  const theme = createTheme();
+const Register: React.FunctionComponent<IRegisterProps> = () => {
+  const [state, dispatch] = useReducer(
+    registerReducer,
+    registerReducerInitialState
+  );
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -65,16 +51,24 @@ const Register: React.FunctionComponent<IRegisterProps> = (props) => {
     const isStrongPassword = checkPasswordStrength(state.password);
 
     if (!isEmailValid) {
-      setState({ ...state, emailError: true });
+      dispatch({ type: SET_EMAIL_ERROR, payload: true });
       return;
+    } else {
+      dispatch({ type: SET_EMAIL_ERROR, payload: false });
     }
+
     if (!isStrongPassword) {
-      setState({ ...state, passwordError: true });
+      dispatch({ type: SET_PASSWORD_ERROR, payload: true });
       return;
+    } else {
+      dispatch({ type: SET_PASSWORD_ERROR, payload: false });
     }
+
     if (state.password !== state.confirmPassword) {
-      setState({ ...state, confirmPasswordError: true });
+      dispatch({ type: SET_CONFIRM_PASSWORD_ERROR, payload: true });
       return;
+    } else {
+      dispatch({ type: SET_CONFIRM_PASSWORD_ERROR, payload: false });
     }
 
     if (
@@ -89,24 +83,26 @@ const Register: React.FunctionComponent<IRegisterProps> = (props) => {
       console.log(state);
 
       // clear data
-      setState(initialRegisterState);
+      dispatch({ type: RESET_STATE, payload: {} });
     } else {
       alert("Something went wrong!");
     }
   };
 
-  const validateEmail = (email: string): boolean => {
+  const validateEmail = useCallback((email: string): boolean => {
     // regular expression for email validation
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
-  };
+  }, []);
 
-  const checkPasswordStrength = (password: string): boolean => {
+  const checkPasswordStrength = useCallback((password: string): boolean => {
     // regular expression for checking strong password validation
     const strongPasswordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#+?&])[A-Za-z\d@$!%*#+?&]{8,}$/;
     return strongPasswordRegex.test(password);
-  };
+  }, []);
+
+  const theme = createTheme();
 
   return (
     <ThemeProvider theme={theme}>
@@ -154,10 +150,11 @@ const Register: React.FunctionComponent<IRegisterProps> = (props) => {
                   autoFocus
                   value={state.firstName}
                   onChange={(e) =>
-                    setState({ ...state, firstName: e.target.value })
+                    dispatch({ type: SET_FIRST_NAME, payload: e.target.value })
                   }
                 />
               </Grid>
+
               <Grid item xs={12} sm={6}>
                 <TextField
                   required
@@ -168,7 +165,7 @@ const Register: React.FunctionComponent<IRegisterProps> = (props) => {
                   autoComplete="family-name"
                   value={state.lastName}
                   onChange={(e) =>
-                    setState({ ...state, lastName: e.target.value })
+                    dispatch({ type: SET_LAST_NAME, payload: e.target.value })
                   }
                 />
               </Grid>
@@ -182,7 +179,7 @@ const Register: React.FunctionComponent<IRegisterProps> = (props) => {
                   autoComplete="email"
                   value={state.email}
                   onChange={(e) => {
-                    setState({ ...state, email: e.target.value });
+                    dispatch({ type: SET_EMAIL, payload: e.target.value });
                   }}
                 />
                 {state.emailError && (
@@ -208,7 +205,7 @@ const Register: React.FunctionComponent<IRegisterProps> = (props) => {
                   autoComplete="new-password"
                   value={state.password}
                   onChange={(e) =>
-                    setState({ ...state, password: e.target.value })
+                    dispatch({ type: SET_PASSWORD, payload: e.target.value })
                   }
                 />
                 {state.passwordError && (
@@ -220,7 +217,7 @@ const Register: React.FunctionComponent<IRegisterProps> = (props) => {
                   >
                     Password must be at least 8 characters, contain at least one
                     uppercase letter, one lowercase letter, one number and one
-                    special character.
+                    special character(@$!%*#+?&).
                   </Typography>
                 )}
               </Grid>
@@ -235,21 +232,12 @@ const Register: React.FunctionComponent<IRegisterProps> = (props) => {
                   autoComplete="new-password"
                   value={state.confirmPassword}
                   onChange={(e) =>
-                    setState({ ...state, confirmPassword: e.target.value })
+                    dispatch({
+                      type: SET_CONFIRM_PASSWORD,
+                      payload: e.target.value,
+                    })
                   }
                 />
-                {state.passwordError && (
-                  <Typography
-                    component="p"
-                    sx={{
-                      color: "red",
-                    }}
-                  >
-                    Password must be at least 8 characters, contain at least one
-                    uppercase letter, one lowercase letter, one number and one
-                    special character.
-                  </Typography>
-                )}
                 {state.confirmPasswordError && (
                   <Typography
                     component="p"
@@ -276,7 +264,10 @@ const Register: React.FunctionComponent<IRegisterProps> = (props) => {
                       const question = securityQuestions.find(
                         (q) => q.id === selectedId
                       );
-                      setState({ ...state, selectedQuestion: question });
+                      dispatch({
+                        type: SET_SELECTED_QUESTION,
+                        payload: question,
+                      });
                     }}
                   >
                     <MenuItem value="">
@@ -304,7 +295,7 @@ const Register: React.FunctionComponent<IRegisterProps> = (props) => {
                   autoComplete="off"
                   value={state.answer}
                   onChange={(e) =>
-                    setState({ ...state, answer: e.target.value })
+                    dispatch({ type: SET_ANSWER, payload: e.target.value })
                   }
                 />
               </Grid>
@@ -331,4 +322,4 @@ const Register: React.FunctionComponent<IRegisterProps> = (props) => {
     </ThemeProvider>
   );
 };
-export default Register;
+export default memo(Register);
