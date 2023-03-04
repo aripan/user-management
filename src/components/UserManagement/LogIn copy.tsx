@@ -1,4 +1,6 @@
 import AssignmentIndOutlinedIcon from "@mui/icons-material/AssignmentIndOutlined";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import {
   Avatar,
   Box,
@@ -7,56 +9,34 @@ import {
   createTheme,
   CssBaseline,
   Grid,
+  InputAdornment,
   Link,
   TextField,
   ThemeProvider,
   Typography,
 } from "@mui/material";
-import React, { memo, useCallback, useReducer } from "react";
-import {
-  loginReducer,
-  loginReducerInitialState,
-} from "../../reducers/loginReducer/loginReducer";
-import {
-  RESET_STATE,
-  SET_EMAIL,
-  SET_EMAIL_ERROR,
-  SET_PASSWORD,
-} from "../../reducers/registerReducer/action.types";
+import React, { useState } from "react";
 
-export interface ILoginProps {}
+export interface ILogInProps {}
 
-const Login: React.FunctionComponent<ILoginProps> = () => {
-  const [state, dispatch] = useReducer(loginReducer, loginReducerInitialState);
+const LogIn: React.FunctionComponent<ILogInProps> = (props) => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const theme = createTheme();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const isEmailValid = validateEmail(state.email);
 
-    if (!isEmailValid) {
-      dispatch({ type: SET_EMAIL_ERROR, payload: true });
-      return;
-    } else {
-      dispatch({ type: SET_EMAIL_ERROR, payload: false });
-    }
-
-    if (state.email && state.password && isEmailValid) {
-      console.log(state);
-
-      // clear data
-      dispatch({ type: RESET_STATE, payload: {} });
+    if (email && password) {
+      const data = {
+        email,
+        password,
+      };
+      console.log(data);
     } else {
       alert("Something went wrong!");
     }
   };
-
-  const validateEmail = useCallback((email: string): boolean => {
-    // regular expression for email validation
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailRegex.test(email);
-  }, []);
-
-  const theme = createTheme();
 
   return (
     <ThemeProvider theme={theme}>
@@ -68,7 +48,6 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
           flexDirection: "column",
           justifyContent: "center",
           height: "80vh",
-          marginTop: 5,
         }}
       >
         <CssBaseline />
@@ -90,47 +69,49 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
             component="form"
             onSubmit={handleSubmit}
             noValidate
-            sx={{ mt: 3, maxWidth: 450 }}
+            sx={{ mt: 1, maxWidth: 450 }}
           >
-            <Grid container spacing={2}>
+            <Grid container spacing={1}>
               <Grid item xs={12}>
                 <TextField
+                  margin="normal"
                   required
                   fullWidth
                   id="email"
                   label="Email Address"
                   name="email"
                   autoComplete="email"
-                  value={state.email}
-                  onChange={(e) => {
-                    dispatch({ type: SET_EMAIL, payload: e.target.value });
+                  autoFocus
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <EmailOutlinedIcon />
+                      </InputAdornment>
+                    ),
                   }}
                 />
-                {state.emailError && (
-                  <Typography
-                    component="p"
-                    sx={{
-                      color: "red",
-                    }}
-                  >
-                    Invalid input
-                  </Typography>
-                )}
               </Grid>
-
               <Grid item xs={12}>
                 <TextField
+                  margin="normal"
                   required
                   fullWidth
                   name="password"
                   label="Password"
                   type="password"
                   id="password"
-                  autoComplete="new-password"
-                  value={state.password}
-                  onChange={(e) =>
-                    dispatch({ type: SET_PASSWORD, payload: e.target.value })
-                  }
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockOutlinedIcon />
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Grid>
             </Grid>
@@ -161,4 +142,4 @@ const Login: React.FunctionComponent<ILoginProps> = () => {
     </ThemeProvider>
   );
 };
-export default memo(Login);
+export default LogIn;
